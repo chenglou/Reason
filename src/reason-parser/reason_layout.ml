@@ -85,7 +85,6 @@ let string_of_easy = function
   | Easy_format.Atom (s,_) -> s
   | Easy_format.List (_,_) -> "list"
   | Easy_format.Label (_,_) -> "label"
-  | Easy_format.Custom _ -> "custom"
 
 let indent_more indent = "  " ^ indent
 
@@ -118,8 +117,6 @@ let dump_easy ppf easy =
       traverse indent' left;
       printf "  %s right \n" indent;
       traverse indent' right;
-    | Easy_format.Custom _ ->
-      printf "custom \n"
   in
   traverse "" easy
 

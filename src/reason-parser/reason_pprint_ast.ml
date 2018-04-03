@@ -1036,9 +1036,6 @@ let inlineLabel labelTerm term =
   } in
   Easy_format.Label ((labelTerm, settings), term)
 
-(* Just for debugging: Set debugWithHtml = true *)
-let debugWithHtml = ref false
-
 let html_escape_string s =
   let buf = Buffer.create (2 * String.length s) in
   for i = 0 to String.length s - 1 do
@@ -1302,7 +1299,7 @@ let insertLinesAboveItems = preOrderWalk (function
         (* it doesn't make sense to insert whitespace above the first item in a
          * sequence. Imagine:
          * module Piano = {
-         *   
+         *
          *   type t = steinway;
          *
          *   let play = () => rachmaninov();
@@ -1579,8 +1576,6 @@ let format_layout ?comments ppf layout =
   let buf = Buffer.create 1000 in
   let fauxmatter = Format.formatter_of_buffer buf in
   let _ = Format.pp_set_margin fauxmatter settings.width in
-  if debugWithHtml.contents then
-    Easy_format.Pretty.define_styles fauxmatter html_escape html_style;
   let _ = Easy_format.Pretty.to_formatter fauxmatter easy in
   let trimmed = Reason_syntax_util.processLineEndingsAndStarts (Buffer.contents buf) in
   Format.fprintf ppf "%s\n" trimmed;

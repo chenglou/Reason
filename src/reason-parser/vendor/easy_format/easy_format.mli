@@ -147,19 +147,6 @@ type label_param = {
     (** Default: [None] *)
 }
 
-val label : label_param
-  (** Default label-formatting parameters, using the default values
-      described in the type definition above.
-
-      In order to make code compatible with future versions of the library,
-      the record inheritance syntax should be used, e.g.
-      [ { label with indent_after_label = 0 } ].
-      If new record fields are added, the program would still compile
-      and work as before.
- *)
-
-
-
 type t =
     Atom of string * atom_param (** Plain string normally
 				    without line breaks. *)
@@ -177,10 +164,6 @@ type t =
   | Label of (t * label_param) * t
       (** [Label ((label, param), node)]: labelled node. *)
 
-  | Custom of (Format.formatter -> unit)
-      (** User-defined printing function that allows to use the
-	  Format module directly if necessary. It is responsible
-	  for leaving the formatter in a clean state. *)
 (** The type of the tree to be pretty-printed. Each node contains
     its own formatting parameters.
 
@@ -194,55 +177,10 @@ type t =
 
 *)
 
-type escape =
-    [ `None
-    | `Escape of
-	((string -> int -> int -> unit) -> string -> int -> int -> unit)
-    | `Escape_string of (string -> string) ]
-
 type styles = (style_name * style) list
 
 (** The regular pretty-printing functions *)
 module Pretty :
 sig
-  val define_styles : Format.formatter -> escape -> styles -> unit
   val to_formatter : Format.formatter -> t -> unit
-
-  val to_buffer : ?escape:escape -> ?styles:styles -> Buffer.t -> t -> unit
-  val to_string : ?escape:escape -> ?styles:styles -> t -> string
-  val to_channel : ?escape:escape -> ?styles:styles -> out_channel -> t -> unit
-  val to_stdout : ?escape:escape -> ?styles:styles -> t -> unit
-  val to_stderr : ?escape:escape -> ?styles:styles -> t -> unit
 end
-
-(** No spacing or newlines other than those in the input data
-    or those produced by [Custom] printing. *)
-module Compact :
-sig
-  val to_buffer : Buffer.t -> t -> unit
-  val to_string : t -> string
-  val to_channel : out_channel -> t -> unit
-  val to_stdout : t -> unit
-  val to_stderr : t -> unit
-  val to_formatter : Format.formatter -> t -> unit
- end
-
-
-(**/**)
-
-(** Deprecated. Predefined sets of parameters *)
-module Param :
-sig
-  val list_true : list_param
-    (** Deprecated. All boolean fields set to true. indent_body = 2. *)
-
-  val label_true : label_param
-    (** Deprecated. All boolean fields set to true. indent_after_label = 2. *)
-
-  val list_false : list_param
-    (** Deprecated. All boolean fields set to false. indent_body = 2. *)
-
-  val label_false : label_param
-    (** Deprecated. All boolean fields set to false. indent_after_label = 2. *)
-end
-
